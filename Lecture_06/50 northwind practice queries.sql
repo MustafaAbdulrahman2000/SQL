@@ -178,63 +178,131 @@ GO
 
 -- Q[26].
 
-
+SELECT [ShipPostalCode], [OrderID], [OrderDate], [RequiredDate], [ShippedDate], [ShipAddress] 
+FROM [Orders]
+WHERE [OrderID] LIKE '98124%';
+GO
 
 -- Q[27].
 
-
+SELECT [ContactName], [ContactTitle], [CompanyName] 
+FROM [Customers]
+WHERE [ContactTitle] NOT LIKE '%Sales%';
+GO
 
 -- Q[28].
 
-
+SELECT [LastName], [FirstName], [City]
+FROM [Employees]
+WHERE [City] <> 'Seattle';
+GO
 
 -- Q[29].
 
-
+SELECT [CompanyName], [ContactTitle], [City], [Country]
+FROM [Customers]
+WHERE [Country] = 'Mexico' OR ([Country] = 'Spain' AND [City] <> 'Madrid');
+GO
 
 -- Q[30].
 
-
-
--- Q[31].
-
-
+SELECT CONCAT([FirstName], ' ', [LastName], ' can be reached at x', [Extension]) AS 'ContactInfo'
+FROM [Employees];
+GO
 
 -- Q[31].
 
+SELECT [ContactName]
+FROM [Customers] 
+WHERE [ContactName] NOT LIKE '_A%';
+GO
 
+-- Q[31].
+
+SELECT ROUND(AVG([P].[UnitPrice]), 0) AS 'AveragePrice', SUM([P].[UnitsInStock]) AS 'TotalStock', MAX([P].[UnitsOnOrder]) AS 'MaxOrder'
+FROM [Products] [P] INNER JOIN [Order Details] [O]
+ON [P].[ProductID] = [O].[ProductID]
+GROUP BY [O].[OrderID];
+GO
 
 -- Q[33].
 
-
+SELECT [S].[SupplierID], [S].[CompanyName], [C].[CategoryName], [P].[ProductName], [P].[UnitPrice] 
+FROM [Products] [P] INNER JOIN [Suppliers] [S]
+ON [P].SupplierID = [S].[SupplierID] INNER JOIN [Categories] [C]
+ON [P].[CategoryID] = [C].[CategoryID];
+GO
 
 -- Q[34].
 
-
+SELECT  [CustomerID], SUM([Freight]) AS 'SumOfFreight'
+FROM [Orders]
+GROUP BY [CustomerID]
+HAVING SUM([Freight]) > 200;
+GO
 
 -- Q[35].
 
-
+SELECT [O].[OrderID], [C].[ContactName], [OD].[UnitPrice], [OD].[Quantity], [OD].[Discount]
+FROM [Orders] [O] INNER JOIN [Order Details] [OD]
+ON [O].OrderID = [OD].OrderID INNER JOIN [Customers] [C]
+ON [O].[CustomerID] = [C].[CustomerID]
+WHERE [OD].Discount > 0;
+GO
 
 -- Q[36].
 
-
+SELECT 
+	[E].[EmployeeID],
+	CONCAT([E].[FirstName], ' ', [E].LastName) AS 'Employee',
+	CONCAT([M].[FirstName], ' ', [M].LastName) AS 'Manager'
+FROM [Employees] [E] INNER JOIN [Employees] [M]
+ON [E].[ReportsTo] = [M].[EmployeeID]
+ORDER BY [E].[EmployeeID];
+GO
 
 -- Q[37].
 
-
+SELECT AVG([UnitPrice]) AS 'AveragePrice', MIN([UnitPrice]) AS 'MinimumPrice', MAX([UnitPrice]) AS 'MaximumPrice'
+FROM [Products];
+GO
 
 -- Q[38].
 
+CREATE OR ALTER VIEW [dbo].[CustomerInfo]
+AS 
+	SELECT  
+		[C].[CustomerID], [C].[CompanyName], [C].[ContactName],
+		[C].[ContactTitle], [C].[Address], [C].[City], 
+		[C].[Country], [C].[Phone], [O].[OrderDate], 
+		[O].[RequiredDate], [O].[ShippedDate]
+	FROM [Orders] [O] INNER JOIN [Customers] [C]
+	ON [O].CustomerID = [C].[CustomerID];
+GO
 
+SELECT * FROM [dbo].[CustomerInfo];
+GO
 
 -- Q[39].
 
+sp_rename @objname = 'dbo.CustomerInfo', @newname = 'Customer details';
 
+SELECT * FROM [dbo].[Customer details];
 
 -- Q[40].
 
+CREATE OR ALTER VIEW [dbo].[ProductDetails]
+AS
+	SELECT [P].[ProductID], [S].[CompanyName], [P].[ProductName], 
+		   [C].[CategoryName], [C].[Description], [P].[QuantityPerUnit], 
+		   [P].[UnitPrice], [P].[UnitsInStock], [P].[UnitsOnOrder], 
+		   [P].[ReorderLevel], [P].[Discontinued]
+	FROM [Products] [P] INNER JOIN [Suppliers] [S]
+	ON [P].[SupplierID] = [S].[SupplierID] INNER JOIN [Categories] [C]
+	ON [P].[CategoryID] = [C].[CategoryID];
+GO
 
+SELECT * FROM [dbo].[ProductDetails];
 
 -- Q[41].
 
