@@ -303,43 +303,82 @@ AS
 GO
 
 SELECT * FROM [dbo].[ProductDetails];
+GO
 
 -- Q[41].
 
-
+DROP VIEW [dbo].[Customer details];
+GO 
 
 -- Q[42].
 
-
+SELECT SUBSTRING([CategoryName], 0, 6) AS 'ShortInfo'
+FROM [Categories];
+GO
 
 -- Q[43].
 
+CREATE TABLE [shippers_duplicate] LIKE [dbo].[Shippers];
+GO
 
+SELECT *
+INTO [shippers_duplicate]
+FROM [Shippers]
+WHERE 1 = 0;
+GO
+
+SELECT *
+INTO [shippers_duplicate]
+FROM [Shippers]
+GO
 
 -- Q[44].
 
-
+SELECT * FROM [shippers_duplicate];
+GO
 
 -- Q[45].
 
-
+SELECT [S].[CompanyName], [P].[ProductName]
+FROM [Products] [P] INNER JOIN [Categories] [C]
+ON [P].[CategoryID] = [C].CategoryID INNER JOIN [Suppliers] [S]
+ON [P].SupplierID = [S].[SupplierID]
+WHERE [C].CategoryName = 'Seafood';
+GO
 
 -- Q[46].
 
-
+SELECT [C].[CategoryID], [S].[CompanyName], [P].[ProductName] 
+FROM [Products] [P] INNER JOIN [Categories] [C] 
+ON [P].[CategoryID] = [C].[CategoryID] INNER JOIN [Suppliers] [S]
+ON [P].[SupplierID] = [S].[SupplierID]
+WHERE [C].[CategoryID] = 5;
+GO
 
 -- Q[47].
 
-
+DROP TABLE [dbo].[shippers_duplicate];
+GO
 
 -- Q[48].
 
-
+SELECT [LastName], [FirstName], [Title],
+	   CONCAT(ROUND(YEAR(GETDATE()) - YEAR([BirthDate]), 0), ' Years') AS [Age]
+FROM [Employees];
+GO
 
 -- Q[49].
 
-
+SELECT [C].[CompanyName], COUNT([C].[CustomerID]) AS 'number of orders'
+FROM [Customers] [C] INNER JOIN [Orders] [O]
+ON [C].CustomerID = [O].[CustomerID]
+WHERE [O].[OrderDate] >= '1994-12-31'
+GROUP BY [C].[CompanyName]
+HAVING COUNT(*) > 10;
+GO
 
 -- Q[50].
 
-
+SELECT CONCAT([ProductName], ' weighs/is ', [QuantityPerUnit], ' and cost $', CONVERT(INT, [UnitPrice])) AS 'ProductInfo' 
+FROM [Products];
+GO
